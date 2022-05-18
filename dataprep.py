@@ -64,3 +64,17 @@ def enumerate_events(s, maxlen=None):
     if maxlen is None:
         maxlen = len(s)
     return np.arange(maxlen-len(s), maxlen)
+
+
+def prepare_sequential_data(data, n_pos, time_q, userid='userid', itemid='movieid', timeid='timestamp', seed=None):
+    train_pack, valid_pack, test_pack = split_data(
+        data, userid=userid, itemid=itemid, timeid=timeid, time_q=time_q, seed=seed
+    )
+    training = assign_positions(train_pack[0], n_pos)
+    testset_valid = assign_positions(valid_pack[0], n_pos)
+    testset = assign_positions(test_pack[0], n_pos)
+    
+    train_pack = (training,) + train_pack[1:]
+    valid_pack = (testset_valid,) + valid_pack[1:]
+    test_pack = (testset,) + test_pack[1:]
+    return train_pack, valid_pack, test_pack

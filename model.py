@@ -3,7 +3,7 @@ from hooi import sparse_hooi
 from dataprep import user_field, item_field, position_field
 
 
-def seqtf_model_build(config, data, data_description, iter_callback=None):
+def seqtf_model_build(config, data, data_description, iter_callback=None, verbose=True):
     users = data_description[user_field]
     items = data_description[item_field]
     positions = data_description[position_field]
@@ -24,7 +24,7 @@ def seqtf_model_build(config, data, data_description, iter_callback=None):
         growth_tol = config["growth_tol"],
         seed = config["seed"],
         iter_callback=iter_callback,
-        verbose=True,
+        verbose=verbose,
     )
 
 
@@ -60,10 +60,10 @@ def sequences_score(seq, item_factors, pos_factors, core):
     user_profile = item_factors[seq[-(n_pos-1):], :]
     seq_length, _ = user_profile.shape
     compressed = user_profile.T @ pos_factors[-(seq_length+1):-1]
-    if isinstance(core, (tuple, list)):
-        core_factors = core[1].T
+    if core is not None:
+        _, core_factors = core
         compressed = np.reshape(
-            core_factors @ (core_factors.T @ compressed.ravel(order='F')),
+            core_factors.T @ (core_factors @ compressed.ravel(order='F')),
             compressed.shape,
             order='F'
         )
