@@ -61,7 +61,10 @@ def sequences_score(seq, item_factors, pos_factors, core):
     seq_length, _ = user_profile.shape
     compressed = user_profile.T @ pos_factors[-(seq_length+1):-1]
     if core is not None:
-        _, core_factors = core
+        singular_values, core_factors = core
+        nnz_sv = singular_values > np.finfo(core_factors.dtype).eps
+        if not nnz_sv.all():
+            core_factors = core_factors[nnz_sv, :]
         compressed = np.reshape(
             core_factors.T @ (core_factors @ compressed.ravel(order='F')),
             compressed.shape,
