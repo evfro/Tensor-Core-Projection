@@ -90,6 +90,7 @@ if __name__ == "__main__":
             res_file.write(
                 f'{label},{current_res},{",".join(map(str, mlrank)):s},{projected},"{update_order}"\n'
             )
+            res_file.flush()
             if current_res > max(res[label].values(), default=float('-inf')):
                 print(f'New best {label} model result HR={current_res:.4f} with {config}')
             res[label][tuple(config.values())] = current_res
