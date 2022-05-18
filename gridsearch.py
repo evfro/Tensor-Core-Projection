@@ -58,7 +58,7 @@ if __name__ == "__main__":
     param_grid, param_names = random_grid(grid, n=0, skip_config=skip_config)
 
     with open(f'{n_pos=}_{time_q=}_{data_path=:s}_{max_fails=}.csv', 'w') as res_file:
-        res_file.write(f'label,HR,{",".join(param_names):s}\n')
+        res_file.write(f'label,HR,{",".join(param_names):s},iters\n')
         for *mlrank, projected, update_order in param_grid:
             config = {
                 "mlrank": tuple(mlrank),
@@ -87,8 +87,9 @@ if __name__ == "__main__":
             else:
                 label = 'original'
             current_res = early_stopper.target
+            num_iters = early_stopper.iter + 1
             res_file.write(
-                f'{label},{current_res},{",".join(map(str, mlrank)):s},{projected},"{update_order}"\n'
+                f'{label},{current_res},{",".join(map(str, mlrank)):s},{projected},"{update_order}",{num_iters}\n'
             )
             res_file.flush()
             if current_res > max(res[label].values(), default=float('-inf')):
